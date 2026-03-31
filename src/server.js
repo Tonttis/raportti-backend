@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const pool = require("./db");
 
 const authRoutes = require("./routes/auth");
 const entryRoutes = require("./routes/entries");
@@ -17,6 +18,22 @@ app.use(express.json());
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "reporting-backend" });
+});
+
+app.get("/health/db", async (_req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT 1 AS ok, DATABASE() AS db");
+    res.json({
+      ok: true,
+      database: rows[0].db,
+      result: rows[0].ok
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
+  }
 });
 
 app.use("/auth", authRoutes);
