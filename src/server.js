@@ -26,12 +26,24 @@ app.get("/health/db", async (_req, res) => {
     res.json({
       ok: true,
       database: rows[0].db,
-      result: rows[0].ok
+      result: rows[0].ok,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT
     });
   } catch (error) {
     res.status(500).json({
       ok: false,
-      error: error.message
+      message: error?.message || null,
+      code: error?.code || null,
+      errno: error?.errno || null,
+      sqlState: error?.sqlState || null,
+      syscall: error?.syscall || null,
+      address: error?.address || null,
+      port: error?.port || null,
+      host: process.env.DB_HOST,
+      dbPort: process.env.DB_PORT,
+      dbName: process.env.DB_NAME,
+      dbUser: process.env.DB_USER
     });
   }
 });
